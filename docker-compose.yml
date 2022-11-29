@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  database_ignite:
+    image: postgres
+    container_name: database
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=avalon
+    volumes:
+      - pgdata:/data/postgresql
+    networks:
+      - avalon_network
+
+  app-type:
+    build: .
+    container_name: avalon
+    ports:
+      - 3333:3333
+    volumes:
+      - .:/usr/app
+    links:
+      - database_ignite
+    depends_on:
+      - database_ignite
+    networks:
+      - avalon_network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  avalon_network:
+    driver: bridge
